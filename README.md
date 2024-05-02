@@ -35,4 +35,23 @@ d64fuse.file_type: PRG
 user.mime_type: application/x-c64-prg-file
 d64fuse.is_splat: false
 d64fuse.is_locked: false
-```
+``
+
+## Installation
+
+Note: d64-fuse can be built and used of GNU/Linux systems. It might also be adapted to WinFSP, the Fuse implementation for Windows, but I have not tried yet. Patches are welcome.
+
+### Requirements
+
+* a recent version of gcc
+* cmake (>= 3.28)
+* the fuse3 development package (libfuse3-dev on Debian and derivatives)
+
+### Building steps
+
+From the top source directory:
+
+* mkdir build && cd build
+* cmake ..
+* make
+* make install
