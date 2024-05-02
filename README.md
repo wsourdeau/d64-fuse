@@ -19,7 +19,7 @@ Partly based on [DiskImagery64](https://github.com/ProbablyNotArtyom/DiskImagery
 
 ### Example Command Sequence
 
-```sh
+```console
 /tmp$ d64-fuse --image=/home/wolfgang/Downloads/cbm-c64-demo.d64 /tmp/mount
 /tmp$ xattr -l mount
 d64fuse.image_filename: /home/wolfgang/Downloads/cbm-c64-demo.d64
