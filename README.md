@@ -20,22 +20,22 @@ Partly based on [DiskImagery64](https://github.com/ProbablyNotArtyom/DiskImagery
 ### Example Command Sequence
 
 ```sh
-wolfgang@wolfgang:/tmp$ d64-fuse --image=/home/wolfgang/Downloads/cbm-c64-demo.d64 /tmp/mount
-wolfgang@wolfgang:/tmp xattr -l mount
+/tmp$ d64-fuse --image=/home/wolfgang/Downloads/cbm-c64-demo.d64 /tmp/mount
+/tmp$ xattr -l mount
 d64fuse.image_filename: /home/wolfgang/Downloads/cbm-c64-demo.d64
 d64fuse.disk_label: DEMO PROGRAMS
 user.mime_type: application/x-c64-dir
-wolfgang@wolfgang:/tmp$ cd /tmp/mount
-wolfgang@wolfgang:/tmp/mount$ ls -l BALLOON
+/tmp$ cd /tmp/mount
+/tmp/mount$ ls -l BALLOON
 -rw-r--r-- 1 wolfgang wolfgang 913  4 feb  2019 BALLOON
-wolfgang@wolfgang:/tmp/mount$ file BALLOON
+/tmp/mount$ file BALLOON
 BALLOON: Commodore C64 BASIC program, offset 0x081d, line 10, token (0x99) PRINT "\223":\201I\2620\24463:\227832\252I,0:\202, offset 0x0828, line 20, token (0x8d) GOSUB 60000
-wolfgang@wolfgang:/tmp/mount$ xattr -l BALLOON
+/tmp/mount$ xattr -l BALLOON
 d64fuse.file_type: PRG
 user.mime_type: application/x-c64-prg-file
 d64fuse.is_splat: false
 d64fuse.is_locked: false
-``
+```
 
 ## Installation
 
