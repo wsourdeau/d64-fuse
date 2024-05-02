@@ -8,5 +8,5 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 include (CTest)
 
-add_subdirectory(d64fuse)
+add_subdirectory(d64-fuse)
 add_subdirectory(DiskImagery64-base)
