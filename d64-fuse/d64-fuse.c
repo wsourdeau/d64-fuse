@@ -1,4 +1,3 @@
-#define FUSE_USE_VERSION 35
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -10,9 +9,9 @@
 
 #include <fuse.h>
 
-#include "utils.h"
-#include "context.h"
+#include "d64fuse_context.h"
 #include "operations.h"
+#include "utils.h"
 
 typedef struct d64fuse_options {
   char *image_filename;
@@ -28,7 +27,6 @@ static void show_help (const char *progname)
 
 int parse_args(struct fuse_args *args, d64fuse_options *options_ptr)
 {
-  int result;
   struct fuse_opt option_spec[] = {
     OPTION ("-I %s", image_filename, 0),
     OPTION ("--image=%s", image_filename, 0),
@@ -37,7 +35,7 @@ int parse_args(struct fuse_args *args, d64fuse_options *options_ptr)
     FUSE_OPT_END
   };
 
-  result = fuse_opt_parse (args, options_ptr, option_spec, NULL);
+  int result = fuse_opt_parse (args, options_ptr, option_spec, NULL);
   if (result == 0)
     {
       if (options_ptr->show_help)
@@ -47,33 +45,53 @@ int parse_args(struct fuse_args *args, d64fuse_options *options_ptr)
           fprintf (stderr, "missing '--image' parameter\n");
           result = -1;
         }
+
+      if (access (options_ptr->image_filename, R_OK) != 0)
+        {
+          perror ("Invalid image parameter");
+          return -1;
+        }
     }
+
+  return result;
+}
+
+d64fuse_context make_context (const d64fuse_options * options)
+{
+  d64fuse_context context;
+
+  memset (&context, 0, sizeof (context));
+  context.nbr_files = -1;
+  context.image_filename = canonicalize_file_name (options->image_filename);
+
+  return context;
+}
+
+int run_d64fuse (const d64fuse_options * options, const struct fuse_args *args)
+{
+  d64fuse_context context = make_context (options);
+  int result = fuse_main (args->argc, args->argv, &operations, &context);
+  free (context.image_filename);
 
   return result;
 }
 
 int main (int argc, char * argv[])
 {
-  int result = 0;
-  d64fuse_options options;
   struct fuse_args args = FUSE_ARGS_INIT (argc, argv);
+  d64fuse_options options;
 
-  if (parse_args (&args, &options) == 0)
+  if (parse_args (&args, &options) != 0)
+    return -1;
+
+  if (options.show_help)
     {
-      d64fuse_context context;
-      memset (&context, 0, sizeof (context));
-      context.nbr_files = -1;
-
-      if (options.show_help)
-        show_help (argv[0]);
-      else
-        context.image_filename = options.image_filename;
-
-      result = fuse_main (args.argc, args.argv, &operations, &context);
-      fuse_opt_free_args (&args);
+      show_help (argv[0]);
+      return 0;
     }
-  else
-    result = -1;
+
+  int result = run_d64fuse (&options, &args);
+  fuse_opt_free_args (&args);
 
   return result;
 }

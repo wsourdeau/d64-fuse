@@ -6,7 +6,6 @@
 #define and &&
 #define or ||
 #define unused_arg(X) { (void) X; }
-#define operation_not_supported -ENOTSUP
 
 #define TODO { (void)(1); };
 

@@ -103,6 +103,7 @@ int di_track_blocks_free(DiskImage *di, int track);
 int di_is_ts_free(DiskImage *di, TrackSector ts);
 void di_alloc_ts(DiskImage *di, TrackSector ts);
 void di_free_ts(DiskImage *di, TrackSector ts);
+TrackSector next_ts_in_chain (DiskImage *di, TrackSector ts);
 
 int di_rawname_from_name(unsigned char *rawname, char *name);
 int di_name_from_rawname(char *name, unsigned char *rawname);
