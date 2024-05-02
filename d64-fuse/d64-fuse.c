@@ -14,7 +14,7 @@
 #include "utils.h"
 
 typedef struct d64fuse_options {
-  char *image_filename;
+  const char *image_filename;
   int show_help;
 } d64fuse_options;
 
@@ -35,25 +35,36 @@ int parse_args(struct fuse_args *args, d64fuse_options *options_ptr)
     FUSE_OPT_END
   };
 
-  int result = fuse_opt_parse (args, options_ptr, option_spec, NULL);
-  if (result == 0)
-    {
-      if (options_ptr->show_help)
-        fuse_opt_add_arg (args, "--help");
-      else if (is_null(options_ptr->image_filename))
-        {
-          fprintf (stderr, "missing '--image' parameter\n");
-          result = -1;
-        }
+  if (fuse_opt_parse (args, options_ptr, option_spec, NULL) == -1)
+      return -1;
 
-      if (access (options_ptr->image_filename, R_OK) != 0)
-        {
-          perror ("Invalid image parameter");
-          return -1;
-        }
+  if (options_ptr->show_help)
+    {
+      fuse_opt_add_arg (args, "--help");
+      args->argv[0][0] = '\0';
+      return 0;
     }
 
-  return result;
+  if (is_null(options_ptr->image_filename))
+    {
+      fprintf (stderr, "Missing '--image' parameter.\n");
+      options_ptr->show_help = 1;
+      return -1;
+    }
+
+  if (access (options_ptr->image_filename, F_OK) != 0)
+    {
+      perror ("Image file does not exist");
+      return -1;
+    }
+
+  if (access (options_ptr->image_filename, R_OK) != 0)
+    {
+      perror ("Image file cannot be read");
+      return -1;
+    }
+
+  return 0;
 }
 
 d64fuse_context make_context (const d64fuse_options * options)
@@ -82,7 +93,11 @@ int main (int argc, char * argv[])
   d64fuse_options options;
 
   if (parse_args (&args, &options) != 0)
-    return -1;
+    {
+      if (options.show_help)
+        show_help (argv[0]);
+      return -1;
+    }
 
   if (options.show_help)
     {
