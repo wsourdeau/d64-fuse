@@ -84,6 +84,18 @@ static size_t get_exact_file_size(struct diskimage *disk_image, unsigned char * 
   return file_size;
 }
 
+static void ensure_valid_filename (char * filename)
+{
+    char *current_char = filename;
+
+    while (*current_char != '\0')
+      {
+        if (*current_char == '/')
+          *current_char = '_';
+        current_char++;
+      }
+}
+
 static void fill_file_data (off_t file_nbr, d64fuse_context *context, RawDirEntry *rde)
 {
   unsigned char type = rde->type & 0x07;
@@ -92,6 +104,7 @@ static void fill_file_data (off_t file_nbr, d64fuse_context *context, RawDirEntr
   current_stat->file_type = type;
   current_stat->rawname = rde->rawname;
   di_name_from_rawname (current_stat->filename, rde->rawname);
+  ensure_valid_filename (current_stat->filename);
   size_t fn_len = strlen (current_stat->filename);
   if (fn_len == 0)
     {
